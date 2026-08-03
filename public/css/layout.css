@@ -1,0 +1,308 @@
+/* ------------------------------------------------------------------
+   Layout Grid & Form Elements System (layout.css)
+   Inspired by and fully compatible with public/css/trongate.css
+------------------------------------------------------------------ */
+
+/* -------------------------------------------
+   Grid Layout System (Rows & Columns)
+------------------------------------------- */
+
+/* Row container */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: -15px;
+  margin-left: -15px;
+}
+
+/* Common column properties */
+[class*="col-"] {
+  position: relative;
+  width: 100%;
+  padding-right: 15px;
+  padding-left: 15px;
+  box-sizing: border-box;
+}
+
+/* Extra small / default column sizes (0px and up) */
+.col { flex-basis: 0; flex-grow: 1; max-width: 100%; }
+.col-auto { flex: 0 0 auto; width: auto; max-width: 100%; }
+.col-1  { flex: 0 0 8.333333%; max-width: 8.333333%; }
+.col-2  { flex: 0 0 16.666667%; max-width: 16.666667%; }
+.col-3  { flex: 0 0 25%; max-width: 25%; }
+.col-4  { flex: 0 0 33.333333%; max-width: 33.333333%; }
+.col-5  { flex: 0 0 41.666667%; max-width: 41.666667%; }
+.col-6  { flex: 0 0 50%; max-width: 50%; }
+.col-7  { flex: 0 0 58.333333%; max-width: 58.333333%; }
+.col-8  { flex: 0 0 66.666667%; max-width: 66.666667%; }
+.col-9  { flex: 0 0 75%; max-width: 75%; }
+.col-10 { flex: 0 0 83.333333%; max-width: 83.333333%; }
+.col-11 { flex: 0 0 91.666667%; max-width: 91.666667%; }
+.col-12 { flex: 0 0 100%; max-width: 100%; }
+
+/* Small devices (576px and up) */
+@media (min-width: 576px) {
+  .col-sm { flex-basis: 0; flex-grow: 1; max-width: 100%; }
+  .col-sm-auto { flex: 0 0 auto; width: auto; max-width: 100%; }
+  .col-sm-1  { flex: 0 0 8.333333%; max-width: 8.333333%; }
+  .col-sm-2  { flex: 0 0 16.666667%; max-width: 16.666667%; }
+  .col-sm-3  { flex: 0 0 25%; max-width: 25%; }
+  .col-sm-4  { flex: 0 0 33.333333%; max-width: 33.333333%; }
+  .col-sm-5  { flex: 0 0 41.666667%; max-width: 41.666667%; }
+  .col-sm-6  { flex: 0 0 50%; max-width: 50%; }
+  .col-sm-7  { flex: 0 0 58.333333%; max-width: 58.333333%; }
+  .col-sm-8  { flex: 0 0 66.666667%; max-width: 66.666667%; }
+  .col-sm-9  { flex: 0 0 75%; max-width: 75%; }
+  .col-sm-10 { flex: 0 0 83.333333%; max-width: 83.333333%; }
+  .col-sm-11 { flex: 0 0 91.666667%; max-width: 91.666667%; }
+  .col-sm-12 { flex: 0 0 100%; max-width: 100%; }
+}
+
+/* Medium devices (768px and up) */
+@media (min-width: 768px) {
+  .col-md { flex-basis: 0; flex-grow: 1; max-width: 100%; }
+  .col-md-auto { flex: 0 0 auto; width: auto; max-width: 100%; }
+  .col-md-1  { flex: 0 0 8.333333%; max-width: 8.333333%; }
+  .col-md-2  { flex: 0 0 16.666667%; max-width: 16.666667%; }
+  .col-md-3  { flex: 0 0 25%; max-width: 25%; }
+  .col-md-4  { flex: 0 0 33.333333%; max-width: 33.333333%; }
+  .col-md-5  { flex: 0 0 41.666667%; max-width: 41.666667%; }
+  .col-md-6  { flex: 0 0 50%; max-width: 50%; }
+  .col-md-7  { flex: 0 0 58.333333%; max-width: 58.333333%; }
+  .col-md-8  { flex: 0 0 66.666667%; max-width: 66.666667%; }
+  .col-md-9  { flex: 0 0 75%; max-width: 75%; }
+  .col-md-10 { flex: 0 0 83.333333%; max-width: 83.333333%; }
+  .col-md-11 { flex: 0 0 91.666667%; max-width: 91.666667%; }
+  .col-md-12 { flex: 0 0 100%; max-width: 100%; }
+}
+
+/* Large devices (992px and up) */
+@media (min-width: 992px) {
+  .col-lg { flex-basis: 0; flex-grow: 1; max-width: 100%; }
+  .col-lg-auto { flex: 0 0 auto; width: auto; max-width: 100%; }
+  .col-lg-1  { flex: 0 0 8.333333%; max-width: 8.333333%; }
+  .col-lg-2  { flex: 0 0 16.666667%; max-width: 16.666667%; }
+  .col-lg-3  { flex: 0 0 25%; max-width: 25%; }
+  .col-lg-4  { flex: 0 0 33.333333%; max-width: 33.333333%; }
+  .col-lg-5  { flex: 0 0 41.666667%; max-width: 41.666667%; }
+  .col-lg-6  { flex: 0 0 50%; max-width: 50%; }
+  .col-lg-7  { flex: 0 0 58.333333%; max-width: 58.333333%; }
+  .col-lg-8  { flex: 0 0 66.666667%; max-width: 66.666667%; }
+  .col-lg-9  { flex: 0 0 75%; max-width: 75%; }
+  .col-lg-10 { flex: 0 0 83.333333%; max-width: 83.333333%; }
+  .col-lg-11 { flex: 0 0 91.666667%; max-width: 91.666667%; }
+  .col-lg-12 { flex: 0 0 100%; max-width: 100%; }
+}
+
+/* Extra Large devices (1200px and up) */
+@media (min-width: 1200px) {
+  .col-xl { flex-basis: 0; flex-grow: 1; max-width: 100%; }
+  .col-xl-auto { flex: 0 0 auto; width: auto; max-width: 100%; }
+  .col-xl-1  { flex: 0 0 8.333333%; max-width: 8.333333%; }
+  .col-xl-2  { flex: 0 0 16.666667%; max-width: 16.666667%; }
+  .col-xl-3  { flex: 0 0 25%; max-width: 25%; }
+  .col-xl-4  { flex: 0 0 33.333333%; max-width: 33.333333%; }
+  .col-xl-5  { flex: 0 0 41.666667%; max-width: 41.666667%; }
+  .col-xl-6  { flex: 0 0 50%; max-width: 50%; }
+  .col-xl-7  { flex: 0 0 58.333333%; max-width: 58.333333%; }
+  .col-xl-8  { flex: 0 0 66.666667%; max-width: 66.666667%; }
+  .col-xl-9  { flex: 0 0 75%; max-width: 75%; }
+  .col-xl-10 { flex: 0 0 83.333333%; max-width: 83.333333%; }
+  .col-xl-11 { flex: 0 0 91.666667%; max-width: 91.666667%; }
+  .col-xl-12 { flex: 0 0 100%; max-width: 100%; }
+}
+
+/* No-gutters helper */
+.no-gutters {
+  margin-right: 0;
+  margin-left: 0;
+}
+.no-gutters > [class*="col-"] {
+  padding-right: 0;
+  padding-left: 0;
+}
+
+
+/* -------------------------------------------
+   Form & Element Layouts
+------------------------------------------- */
+
+/* Form Group container to wrap labels and input fields with standard spacing */
+.form-group {
+  margin-bottom: 1.25rem;
+  display: block;
+}
+
+.form-group label {
+  display: inline-block;
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #333;
+}
+
+/* Horizontal Form Layout (Label and control in same row) */
+.form-horizontal .form-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.form-horizontal .form-group label {
+  flex: 0 0 25%;
+  max-width: 25%;
+  padding-right: 15px;
+  margin-bottom: 0;
+  text-align: right;
+}
+
+.form-horizontal .form-group .form-control-wrap {
+  flex: 0 0 75%;
+  max-width: 75%;
+}
+
+@media (max-width: 576px) {
+  .form-horizontal .form-group label,
+  .form-horizontal .form-group .form-control-wrap {
+    flex: 0 0 100%;
+    max-width: 100%;
+    text-align: left;
+    padding-right: 0;
+  }
+  .form-horizontal .form-group label {
+    margin-bottom: 0.25rem;
+  }
+}
+
+/* Row-based Form Fields (Multi-column in one row) */
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: -10px;
+  margin-left: -10px;
+}
+
+.form-row > [class*="col-"] {
+  padding-right: 10px;
+  padding-left: 10px;
+}
+
+/* Inline Form Layout (All components in one line) */
+.form-inline {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+}
+
+.form-inline .form-group {
+  display: flex;
+  flex: 0 0 auto;
+  flex-flow: row wrap;
+  align-items: center;
+  margin-bottom: 0;
+  margin-right: 15px;
+}
+
+.form-inline .form-group label {
+  margin-right: 8px;
+  margin-bottom: 0;
+}
+
+@media (max-width: 576px) {
+  .form-inline {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .form-inline .form-group {
+    margin-right: 0;
+    margin-bottom: 1rem;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .form-inline .form-group label {
+    margin-bottom: 0.25rem;
+  }
+}
+
+/* Standardized control sizing helper */
+.form-control {
+  display: block;
+  width: 100%;
+  padding: 0.6em;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #495057;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid var(--border, #c5c5c5);
+  border-radius: 6px;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+/* Focus and State Helpers */
+.form-control:focus {
+  color: #495057;
+  background-color: #fff;
+  border-color: var(--primary, #4682b4);
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(70, 130, 180, 0.25);
+}
+
+/* Valid and Invalid State Overlays */
+.is-valid {
+  border-color: var(--success, #4bb446) !important;
+  background-color: rgba(75, 180, 70, 0.04);
+}
+.is-valid:focus {
+  box-shadow: 0 0 0 0.2rem rgba(75, 180, 70, 0.25) !important;
+}
+
+.is-invalid {
+  border-color: var(--danger, #b4464b) !important;
+  background-color: rgba(180, 70, 75, 0.04);
+}
+.is-invalid:focus {
+  box-shadow: 0 0 0 0.2rem rgba(180, 70, 75, 0.25) !important;
+}
+
+.invalid-feedback {
+  display: block;
+  width: 100%;
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: var(--danger, #b4464b);
+}
+
+/* Checkbox and Radio Custom Wrapper Layouts */
+.form-check {
+  position: relative;
+  display: block;
+  padding-left: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.form-check-inline {
+  display: inline-flex;
+  align-items: center;
+  padding-left: 0;
+  margin-right: 1rem;
+  margin-bottom: 0;
+}
+
+.form-check-input {
+  position: absolute;
+  margin-top: 0.3rem;
+  margin-left: -1.25rem;
+}
+
+.form-check-inline .form-check-input {
+  position: static;
+  margin-top: 0;
+  margin-right: 0.3125rem;
+  margin-left: 0;
+}
+
+.form-check-label {
+  margin-bottom: 0;
+  cursor: pointer;
+}
