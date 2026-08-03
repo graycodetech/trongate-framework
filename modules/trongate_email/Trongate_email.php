@@ -1,7 +1,7 @@
 <?php
 /**
  * Email sending class for handling SMTP email delivery.
- * Supports HTML and plain text emails via authenticated SMTP.
+ * Supports HTML and plain text emails with file attachments via authenticated SMTP.
  * 
  * Configuration is read from config/trongate_email.php
  */
@@ -15,6 +15,7 @@ class Trongate_email {
     private string $from_email;
     private string $from_name;
     private $socket = null;
+    private array $attachments = [];
 
     /**
      * Class constructor.
@@ -22,12 +23,13 @@ class Trongate_email {
      * Prevents direct URL invocation of the module while allowing
      * safe internal usage via application code.
      * Loads configuration from config/trongate_email.php
+     * Can specify an optional config profile (defaults to 'default').
      */
-    public function __construct() {
+    public function __construct(string $profile = 'default') {
         block_url('trongate_email');
         
         // Load configuration
-        $config = $this->load_config();
+        $config = $this->load_config($profile);
         
         $this->smtp_host = $config['smtp_host'];
         $this->smtp_port = (int) ($config['smtp_port'] ?? 465);
@@ -41,10 +43,11 @@ class Trongate_email {
     /**
      * Load configuration from config/trongate_email.php.
      *
+     * @param string $profile The profile config key (e.g. 'default')
      * @return array The email configuration array
      * @throws Exception If config file is missing or required keys are absent
      */
-    private function load_config(): array {
+    private function load_config(string $profile = 'default'): array {
         $config_path = APPPATH . 'config/trongate_email.php';
         
         if (!file_exists($config_path)) {
@@ -53,16 +56,26 @@ class Trongate_email {
         
         require $config_path;
         
-        $config = $config['trongate_email'] ?? [];
+        $profiles = $config['trongate_email'] ?? [];
         
-        if (empty($config)) {
+        if (empty($profiles)) {
             throw new Exception('Configuration array $config[\'trongate_email\'] not found in ' . $config_path);
+        }
+
+        // Support both old flat single profile structures and new multi-profile structures
+        if (isset($profiles[$profile]) && is_array($profiles[$profile])) {
+            $config = $profiles[$profile];
+        } elseif ($profile === 'default' && isset($profiles['smtp_host'])) {
+            // Backward compatibility with previous single config style
+            $config = $profiles;
+        } else {
+            throw new Exception("SMTP configuration profile '{$profile}' not found in " . $config_path);
         }
         
         $required_keys = ['smtp_host', 'smtp_port', 'smtp_user', 'smtp_pass'];
         foreach ($required_keys as $key) {
             if (!isset($config[$key]) || $config[$key] === '') {
-                throw new Exception("Required config key '{$key}' not set in config/trongate_email.php");
+                throw new Exception("Required config key '{$key}' not set in config/trongate_email.php under profile '{$profile}'");
             }
         }
         
@@ -70,10 +83,11 @@ class Trongate_email {
     }
 
     /**
-     * Send an email.
+     * Send an email with optional attachments.
      *
      * @param array $params Required keys: 'to_email', 'subject', 'body_html'
-     *                      Optional keys: 'to_name', 'body_plain'
+     *                      Optional keys: 'to_name', 'body_plain', 'attachments'
+     *                      Attachments: array of file paths or arrays with 'path', 'name', 'mime_type'
      * @return bool True on success, false on failure.
      */
     public function send(array $params): bool {
@@ -82,12 +96,13 @@ class Trongate_email {
         $subject = $params['subject'] ?? '';
         $body_html = $params['body_html'] ?? '';
         $body_plain = $params['body_plain'] ?? $this->html_to_plain($body_html);
+        $attachments = $params['attachments'] ?? [];
 
         if (empty($to_email) || empty($subject) || empty($body_html)) {
             return false;
         }
 
-        $message = $this->build_message($to_email, $to_name, $subject, $body_html, $body_plain);
+        $message = $this->build_message($to_email, $to_name, $subject, $body_html, $body_plain, $attachments);
         return $this->smtp_send($to_email, $message);
     }
 
@@ -106,16 +121,18 @@ class Trongate_email {
     }
 
     /**
-     * Build the MIME message.
+     * Build the MIME message with optional attachments.
      */
     private function build_message(
         string $to_email,
         string $to_name,
         string $subject,
         string $body_html,
-        string $body_plain
+        string $body_plain,
+        array $attachments = []
     ): string {
         $boundary = md5(uniqid(time()));
+        $boundary_alt = md5(uniqid(time()) . 'alt');
 
         $headers = [];
         $headers[] = 'MIME-Version: 1.0';
@@ -123,25 +140,95 @@ class Trongate_email {
         $headers[] = 'From: ' . $this->format_address($this->from_email, $this->from_name);
         $headers[] = 'To: ' . $this->format_address($to_email, $to_name);
         $headers[] = 'Subject: ' . $this->encode_header($subject);
-        $headers[] = 'Content-Type: multipart/alternative; boundary="' . $boundary . '"';
 
-        $message = implode("\r\n", $headers) . "\r\n\r\n";
+        // Determine if we have attachments
+        if (!empty($attachments)) {
+            $headers[] = 'Content-Type: multipart/mixed; boundary="' . $boundary . '"';
+            $message = implode("\r\n", $headers) . "\r\n\r\n";
 
-        // Plain text part
-        $message .= '--' . $boundary . "\r\n";
-        $message .= "Content-Type: text/plain; charset=UTF-8\r\n";
-        $message .= "Content-Transfer-Encoding: quoted-printable\r\n\r\n";
-        $message .= $this->quoted_printable_encode($body_plain) . "\r\n\r\n";
+            // Add the multipart/alternative part for the email body
+            $message .= '--' . $boundary . "\r\n";
+            $message .= "Content-Type: multipart/alternative; boundary=\"{$boundary_alt}\"\r\n\r\n";
 
-        // HTML part
-        $message .= '--' . $boundary . "\r\n";
-        $message .= "Content-Type: text/html; charset=UTF-8\r\n";
-        $message .= "Content-Transfer-Encoding: quoted-printable\r\n\r\n";
-        $message .= $this->quoted_printable_encode($body_html) . "\r\n\r\n";
+            // Plain text part
+            $message .= '--' . $boundary_alt . "\r\n";
+            $message .= "Content-Type: text/plain; charset=UTF-8\r\n";
+            $message .= "Content-Transfer-Encoding: quoted-printable\r\n\r\n";
+            $message .= $this->quoted_printable_encode($body_plain) . "\r\n\r\n";
 
-        $message .= '--' . $boundary . "--\r\n";
+            // HTML part
+            $message .= '--' . $boundary_alt . "\r\n";
+            $message .= "Content-Type: text/html; charset=UTF-8\r\n";
+            $message .= "Content-Transfer-Encoding: quoted-printable\r\n\r\n";
+            $message .= $this->quoted_printable_encode($body_html) . "\r\n\r\n";
+
+            // End of alternative part
+            $message .= '--' . $boundary_alt . "--\r\n\r\n";
+
+            // Add attachments
+            foreach ($attachments as $attachment) {
+                $message .= $this->build_attachment_part($attachment, $boundary);
+            }
+
+            // End of mixed part
+            $message .= '--' . $boundary . "--\r\n";
+        } else {
+            // No attachments - use multipart/alternative only
+            $headers[] = 'Content-Type: multipart/alternative; boundary="' . $boundary . '"';
+            $message = implode("\r\n", $headers) . "\r\n\r\n";
+
+            // Plain text part
+            $message .= '--' . $boundary . "\r\n";
+            $message .= "Content-Type: text/plain; charset=UTF-8\r\n";
+            $message .= "Content-Transfer-Encoding: quoted-printable\r\n\r\n";
+            $message .= $this->quoted_printable_encode($body_plain) . "\r\n\r\n";
+
+            // HTML part
+            $message .= '--' . $boundary . "\r\n";
+            $message .= "Content-Type: text/html; charset=UTF-8\r\n";
+            $message .= "Content-Transfer-Encoding: quoted-printable\r\n\r\n";
+            $message .= $this->quoted_printable_encode($body_html) . "\r\n\r\n";
+
+            $message .= '--' . $boundary . "--\r\n";
+        }
 
         return $message;
+    }
+
+    /**
+     * Build an attachment part for the email.
+     *
+     * @param array|string $attachment Attachment data (path string or array with 'path', 'name', 'mime_type')
+     * @param string $boundary The boundary string for the MIME message
+     * @return string The formatted attachment part
+     */
+    private function build_attachment_part($attachment, string $boundary): string {
+        // Parse attachment data
+        if (is_string($attachment)) {
+            $file_path = $attachment;
+            $file_name = basename($file_path);
+            $mime_type = function_exists('mime_content_type') && file_exists($file_path) ? (mime_content_type($file_path) ?: 'application/octet-stream') : 'application/octet-stream';
+        } else {
+            $file_path = $attachment['path'] ?? '';
+            $file_name = $attachment['name'] ?? basename($file_path);
+            $mime_type = $attachment['mime_type'] ?? (function_exists('mime_content_type') && file_exists($file_path) ? (mime_content_type($file_path) ?: 'application/octet-stream') : 'application/octet-stream');
+        }
+
+        // Read file content
+        if (!file_exists($file_path) || !is_readable($file_path)) {
+            return ''; // Skip this attachment if file is not accessible
+        }
+
+        $file_content = file_get_contents($file_path);
+        $encoded_content = chunk_split(base64_encode($file_content));
+
+        $part = '--' . $boundary . "\r\n";
+        $part .= "Content-Type: " . $mime_type . "; name=\"" . $this->encode_header($file_name) . "\"\r\n";
+        $part .= "Content-Transfer-Encoding: base64\r\n";
+        $part .= "Content-Disposition: attachment; filename=\"" . $this->encode_header($file_name) . "\"\r\n\r\n";
+        $part .= $encoded_content . "\r\n";
+
+        return $part;
     }
 
     /**
