@@ -59,7 +59,7 @@ if (strtolower(ENV) === 'dev') {
             <li class="nav-dropdown">
                 <div>
                     <span>Messages</span>
-                    <span aria-hidden="true" class="arrow-icon">&#9660;</span>
+                    <span aria-hidden="true" class="arrow-icon"></span>
                 </div>
                 <ul id="messages-submenu" class="nav-submenu">
                     <li><a href="#">Inbox</a></li>
@@ -76,7 +76,7 @@ if (strtolower(ENV) === 'dev') {
             <li class="nav-dropdown">
                 <div>
                     <span>Reports</span>
-                    <span aria-hidden="true" class="arrow-icon">&#9660;</span>
+                    <span aria-hidden="true" class="arrow-icon"></span>
                 </div>
                 <ul id="reports-submenu" class="nav-submenu">
                     <li><a href="#">Sales Reports</a></li>

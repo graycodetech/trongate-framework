@@ -205,34 +205,106 @@ ul.top-nav > li { margin: 0 1em; }
 body.nav-open { overflow: hidden; }
 
 /* -------------------------------------------
-   Sidebar Menu Architecture
+   Sidebar Menu Architecture (AdminLTE 4 Feel)
 ------------------------------------------- */
-.side-nav-menu { list-style-type: none; padding: 0; font-size: 0.9em; }
-.side-nav-menu > li { padding: 14px 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); cursor: pointer; }
-.side-nav-menu > li:last-child { border-bottom: none; }
-.side-nav-menu > li.nav-dropdown { padding-left: 0; }
-.side-nav-menu > li.nav-dropdown.open { padding-bottom: 0; }
-.side-nav-menu > li.nav-dropdown.open > div { padding-bottom: 12px; }
-.side-nav-menu > li:hover { background-color: rgba(255, 255, 255, 0.07); }
-.side-nav-menu > li > a { display: block; text-decoration: none; }
+.side-nav-menu {
+  list-style-type: none;
+  padding: 8px;
+  margin: 0;
+  font-size: 0.9em;
+}
 
-.side-nav-menu .arrow-icon { display: inline-block; transform: rotate(-90deg); margin-right: 12px; transition: transform 0.2s ease-out; }
-.side-nav-menu .arrow-icon.rotate { transform: rotate(0deg); }
+/* Individual list items as pills like AdminLTE 4 */
+.side-nav-menu > li {
+  padding: 0;
+  margin-bottom: 4px;
+  border-bottom: none;
+  cursor: pointer;
+}
 
-.side-nav-menu .nav-dropdown > div { display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding-left: 12px; }
+.side-nav-menu > li > a,
+.side-nav-menu .nav-dropdown > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  border-radius: 4px;
+  color: rgba(255, 255, 255, 0.8) !important;
+  text-decoration: none;
+  transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
+}
+
+.side-nav-menu > li:hover > a,
+.side-nav-menu .nav-dropdown:hover > div {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff !important;
+}
+
+/* Arrow transition */
+.side-nav-menu .arrow-icon {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  margin-left: auto;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-left: 5px solid rgba(255, 255, 255, 0.7);
+  transition: transform 0.3s ease;
+}
+
+.side-nav-menu .arrow-icon.rotate {
+  transform: rotate(90deg);
+}
+
+/* Submenu layout styling */
 .side-nav-menu .nav-submenu {
   display: block;
   max-height: 0;
   margin: 0;
   padding: 0;
   list-style-type: none;
-  transition: max-height 0.2s ease-out;
+  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
-  background-color: var(--submenu-bg);
+  background-color: transparent; /* AdminLTE 4 submenus are typically transparent / integrated */
 }
-.side-nav-menu .nav-submenu li { padding: 10px 24px; border-bottom: 1px solid rgba(255, 255, 255, 0.03); font-size: 0.9em; }
-.side-nav-menu .nav-submenu li:hover { background-color: var(--submenu-hover-bg); }
-.side-nav-menu .nav-submenu a { display: block; text-decoration: none; }
+
+.side-nav-menu .nav-submenu li {
+  padding: 0;
+  border-bottom: none;
+}
+
+.side-nav-menu .nav-submenu a {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px 8px 32px; /* Indent submenus */
+  color: rgba(255, 255, 255, 0.75) !important;
+  text-decoration: none;
+  border-radius: 4px;
+  transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
+  position: relative;
+}
+
+/* Bullet circle marker like AdminLTE 4 */
+.side-nav-menu .nav-submenu a::before {
+  content: "";
+  position: absolute;
+  left: 18px;
+  width: 6px;
+  height: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+  transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+}
+
+.side-nav-menu .nav-submenu a:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #fff !important;
+}
+
+.side-nav-menu .nav-submenu a:hover::before {
+  background-color: rgba(255, 255, 255, 0.8);
+  border-color: #fff;
+}
 
 /* -------------------------------------------
    Record Details Views ('Show' View Layout)
