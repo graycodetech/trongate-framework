@@ -67,19 +67,31 @@ const TG_ADMIN = {
     const dropdowns = document.querySelectorAll('.side-nav-menu .nav-dropdown');
     
     dropdowns.forEach((dropdown) => {
-      dropdown.addEventListener('click', (e) => {
+      const trigger = dropdown.querySelector('div');
+      if (!trigger) return;
+
+      trigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+
         const arrow = dropdown.querySelector('.arrow-icon');
         arrow?.classList.toggle('rotate');
         
         dropdown.classList.toggle('open');
         
         const submenu = dropdown.querySelector('.nav-submenu');
+        if (!submenu) return;
         
         if (submenu.style.maxHeight && submenu.style.maxHeight !== '0px') {
           submenu.style.maxHeight = '0';
         } else {
           submenu.style.maxHeight = submenu.scrollHeight + 'px';
         }
+      });
+
+      // Prevent clicks inside the submenu from toggling the parent menu
+      const submenu = dropdown.querySelector('.nav-submenu');
+      submenu?.addEventListener('click', (e) => {
+        e.stopPropagation();
       });
     });
   },
